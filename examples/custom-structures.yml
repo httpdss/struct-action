@@ -1,0 +1,38 @@
+name: Generate with Custom Structures
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.struct.yaml'
+
+jobs:
+  generate-with-custom:
+    name: Generate Using Custom Structures
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate with custom structures
+        uses: httpdss/struct-action@v1
+        with:
+          command: generate
+          struct_file: .struct.yaml
+          structures_repository: myorg/my-custom-structures
+          structures_repository_path: templates
+          structures_repository_ref: v1.0.0
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if [[ -n $(git status -s) ]]; then
+            git add .
+            git commit -m "chore: regenerate structure with custom templates"
+            git push
+          else
+            echo "No changes to commit"
+          fi

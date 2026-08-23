@@ -1,0 +1,61 @@
+name: Drift Detection
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  detect-drift:
+    name: Check for Structure Drift
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for drift
+        id: drift-check
+        uses: httpdss/struct-action@v1
+        with:
+          command: generate
+          struct_file: .struct.yaml
+          dry_run: true
+          diff: true
+          fail_on_diff: true
+
+      - name: Upload drift report
+        if: failure() && steps.drift-check.outputs.has_changes == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: drift-report
+          path: ${{ steps.drift-check.outputs.diff_file }}
+
+      - name: Comment on PR with drift
+        if: failure() && steps.drift-check.outputs.has_changes == 'true' && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const diffFile = '${{ steps.drift-check.outputs.diff_file }}';
+            const diff = fs.existsSync(diffFile) ? fs.readFileSync(diffFile, 'utf8') : 'No diff available';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## ⚠️ Structure Drift Detected
+
+The generated files do not match the structure definition.
+
+<details>
+<summary>View Changes</summary>
+
+\`\`\`diff
+${diff.slice(0, 5000)}
+\`\`\`
+
+</details>
+
+Please regenerate the structure or update the definition.`
+            })
