@@ -111,6 +111,11 @@ jobs:
 | `diff_file` | Path to the diff output file (if generated) |
 | `exit_code` | Exit code from the StructKit command |
 
+## Releases
+
+This repository uses automated release drafting. The first release will be tagged as `v1.0.0`. Users should pin to `@v1` for automatic minor and patch updates, or `@v1.0.0` for a specific version.
+
+
 ## Advanced Examples
 
 ### Use Specific StructKit Version
@@ -329,3 +334,4 @@ MIT License - see [LICENSE](LICENSE) file for details.
 For issues and questions:
 - [Open an issue](https://github.com/httpdss/structkit-action/issues)
 - [StructKit Documentation](https://github.com/httpdss/structkit)
+
