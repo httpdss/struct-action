@@ -111,6 +111,20 @@ jobs:
 | `diff_file` | Path to the diff output file (if generated) |
 | `exit_code` | Exit code from the StructKit command |
 
+## Releases
+
+This repository uses automated release management with semantic versioning:
+
+- **Release Drafting**: Releases are automatically drafted when PRs are merged to main
+- **First Release**: Will be tagged as `v1.0.0`
+- **Major Version Tags**: When a release like `v1.2.3` is published, the major tag `v1` is automatically created/moved to point to it
+- **Pinning Recommendations**:
+  - Use `@v1` to automatically get minor and patch updates (recommended for most users)
+  - Use `@v1.0.0` to pin to a specific version
+
+The major version tag (`v1`) is maintained automatically, so users can always reference the latest stable v1.x.x release using `@v1`.
+
+
 ## Advanced Examples
 
 ### Use Specific StructKit Version
@@ -329,3 +343,4 @@ MIT License - see [LICENSE](LICENSE) file for details.
 For issues and questions:
 - [Open an issue](https://github.com/httpdss/structkit-action/issues)
 - [StructKit Documentation](https://github.com/httpdss/structkit)
+
