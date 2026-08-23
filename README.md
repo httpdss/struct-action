@@ -25,7 +25,7 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: httpdss/structkit-action@v1
         with:
           command: validate
@@ -43,7 +43,7 @@ jobs:
   drift-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: httpdss/structkit-action@v1
         with:
           command: generate
@@ -65,7 +65,7 @@ jobs:
   generate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: httpdss/structkit-action@v1
         with:
@@ -181,7 +181,7 @@ jobs:
           - config/api.struct.yaml
           - config/frontend.struct.yaml
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: httpdss/structkit-action@v1
         with:
           command: validate
@@ -232,7 +232,7 @@ jobs:
   validate-structure:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: httpdss/structkit-action@v1
         with:
           command: validate
@@ -250,7 +250,7 @@ jobs:
   drift-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: httpdss/structkit-action@v1
         with:
           command: generate
@@ -271,7 +271,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: httpdss/structkit-action@v1
         with:

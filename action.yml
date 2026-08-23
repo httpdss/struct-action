@@ -107,7 +107,7 @@ runs:
 
     - name: Checkout custom structures repository
       if: inputs.structures_repository != ''
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         repository: ${{ inputs.structures_repository }}
         ref: ${{ inputs.structures_repository_ref }}
