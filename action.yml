@@ -27,13 +27,13 @@ inputs:
     required: false
     default: 'false'
   no_hooks:
-    description: 'Disable hooks during execution (recommended for CI)'
+    description: 'Disable hooks during execution (check if your StructKit version supports this flag)'
     required: false
-    default: 'true'
+    default: 'false'
   non_interactive:
-    description: 'Run in non-interactive mode (recommended for CI)'
+    description: 'Run in non-interactive mode (check if your StructKit version supports this flag)'
     required: false
-    default: 'true'
+    default: 'false'
   structkit_version:
     description: 'StructKit version to install (PyPI version number, "latest", or git URL)'
     required: false

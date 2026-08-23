@@ -91,8 +91,8 @@ jobs:
 | `output_dir` | Output directory for generated files | No | `.` |
 | `dry_run` | Run in dry-run mode (preview changes without writing) | No | `false` |
 | `diff` | Show diff of changes (use with dry_run for drift detection) | No | `false` |
-| `no_hooks` | Disable hooks during execution (recommended for CI) | No | `true` |
-| `non_interactive` | Run in non-interactive mode (recommended for CI) | No | `true` |
+| `no_hooks` | Disable hooks during execution (check if your StructKit version supports this flag) | No | `false` |
+| `non_interactive` | Run in non-interactive mode (check if your StructKit version supports this flag) | No | `false` |
 | `structkit_version` | StructKit version to install (version number, `latest`, or git URL) | No | `latest` |
 | `structures_path` | Path to custom structures directory | No | `''` |
 | `structures_repository` | Custom structures repository to checkout (format: `owner/repo`) | No | `''` |
@@ -205,6 +205,10 @@ If you need automatic PR creation, use the [reusable workflow](https://github.co
 
 - Python 3.x (automatically installed by the action)
 - GitHub Actions runner with bash support
+
+## Compatibility Note
+
+This action is designed to work with different versions of StructKit. Some command-line flags (`--no-hooks`, `--non-interactive`, `--diff`, `--dry-run`) may not be available in all versions. The action defaults to not using these flags unless explicitly enabled. Check your [StructKit version's documentation](https://github.com/httpdss/structkit) to confirm which flags are supported.
 
 ## How It Works
 
