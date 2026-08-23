@@ -113,7 +113,16 @@ jobs:
 
 ## Releases
 
-This repository uses automated release drafting. The first release will be tagged as `v1.0.0`. Users should pin to `@v1` for automatic minor and patch updates, or `@v1.0.0` for a specific version.
+This repository uses automated release management with semantic versioning:
+
+- **Release Drafting**: Releases are automatically drafted when PRs are merged to main
+- **First Release**: Will be tagged as `v1.0.0`
+- **Major Version Tags**: When a release like `v1.2.3` is published, the major tag `v1` is automatically created/moved to point to it
+- **Pinning Recommendations**:
+  - Use `@v1` to automatically get minor and patch updates (recommended for most users)
+  - Use `@v1.0.0` to pin to a specific version
+
+The major version tag (`v1`) is maintained automatically, so users can always reference the latest stable v1.x.x release using `@v1`.
 
 
 ## Advanced Examples
