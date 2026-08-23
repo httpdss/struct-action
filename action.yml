@@ -1,0 +1,205 @@
+name: 'StructKit Action'
+description: 'Run StructKit validate or generate commands in your CI/CD pipeline'
+author: 'Kenneth Belitzky'
+branding:
+  icon: 'folder'
+  color: 'blue'
+
+inputs:
+  command:
+    description: 'Command to run: validate or generate'
+    required: false
+    default: 'validate'
+  struct_file:
+    description: 'Path to the StructKit configuration file'
+    required: false
+    default: '.struct.yaml'
+  output_dir:
+    description: 'Output directory for generated files'
+    required: false
+    default: '.'
+  dry_run:
+    description: 'Run in dry-run mode (preview changes without writing)'
+    required: false
+    default: 'false'
+  diff:
+    description: 'Show diff of changes (use with dry_run for drift detection)'
+    required: false
+    default: 'false'
+  no_hooks:
+    description: 'Disable hooks during execution (check if your StructKit version supports this flag)'
+    required: false
+    default: 'false'
+  non_interactive:
+    description: 'Run in non-interactive mode (check if your StructKit version supports this flag)'
+    required: false
+    default: 'false'
+  structkit_version:
+    description: 'StructKit version to install (PyPI version number, "latest", or git URL)'
+    required: false
+    default: 'latest'
+  structures_path:
+    description: 'Path to custom structures directory (leave empty for default)'
+    required: false
+    default: ''
+  structures_repository:
+    description: 'Custom structures repository to checkout (format: owner/repo)'
+    required: false
+    default: ''
+  structures_repository_path:
+    description: 'Path within structures_repository where structures are located'
+    required: false
+    default: 'structures'
+  structures_repository_ref:
+    description: 'Git ref (branch/tag/commit) to checkout from structures_repository'
+    required: false
+    default: 'main'
+  extra_args:
+    description: 'Additional arguments to pass to StructKit command'
+    required: false
+    default: ''
+  python_version:
+    description: 'Python version to use'
+    required: false
+    default: '3.x'
+  fail_on_diff:
+    description: 'Fail the action if changes would be made (drift detection)'
+    required: false
+    default: 'false'
+
+outputs:
+  success:
+    description: 'Whether the command completed successfully'
+    value: ${{ steps.run-structkit.outputs.success }}
+  has_changes:
+    description: 'Whether the command would make changes (dry-run) or made changes'
+    value: ${{ steps.run-structkit.outputs.has_changes }}
+  diff_file:
+    description: 'Path to the diff output file (if generated)'
+    value: ${{ steps.run-structkit.outputs.diff_file }}
+  exit_code:
+    description: 'Exit code from the StructKit command'
+    value: ${{ steps.run-structkit.outputs.exit_code }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python_version }}
+
+    - name: Install StructKit
+      shell: bash
+      run: |
+        if [[ "${{ inputs.structkit_version }}" == "latest" ]]; then
+          echo "Installing StructKit from PyPI (latest)"
+          pip install structkit
+        elif [[ "${{ inputs.structkit_version }}" == http* ]]; then
+          echo "Installing StructKit from git URL: ${{ inputs.structkit_version }}"
+          pip install "git+${{ inputs.structkit_version }}"
+        else
+          echo "Installing StructKit version: ${{ inputs.structkit_version }}"
+          pip install "structkit==${{ inputs.structkit_version }}"
+        fi
+        echo "StructKit installed successfully"
+        structkit --help > /dev/null
+
+    - name: Checkout custom structures repository
+      if: inputs.structures_repository != ''
+      uses: actions/checkout@v7
+      with:
+        repository: ${{ inputs.structures_repository }}
+        ref: ${{ inputs.structures_repository_ref }}
+        path: .structkit-custom-structures
+        token: ${{ github.token }}
+
+    - name: Run StructKit
+      id: run-structkit
+      shell: bash
+      run: |
+        set +e
+
+        # Build command arguments
+        COMMAND="${{ inputs.command }}"
+        ARGS=()
+
+        # Add non-interactive flag if enabled
+        if [[ "${{ inputs.non_interactive }}" == "true" ]]; then
+          ARGS+=("--non-interactive")
+        fi
+
+        # Add no-hooks flag if enabled
+        if [[ "${{ inputs.no_hooks }}" == "true" ]]; then
+          ARGS+=("--no-hooks")
+        fi
+
+        # Add dry-run flag if enabled
+        if [[ "${{ inputs.dry_run }}" == "true" ]]; then
+          ARGS+=("--dry-run")
+        fi
+
+        # Add diff flag if enabled
+        if [[ "${{ inputs.diff }}" == "true" ]]; then
+          ARGS+=("--diff")
+        fi
+
+        # Add custom structures path if specified
+        if [[ -n "${{ inputs.structures_path }}" ]]; then
+          ARGS+=("-s" "${{ inputs.structures_path }}")
+        elif [[ -d ".structkit-custom-structures/${{ inputs.structures_repository_path }}" ]]; then
+          ARGS+=("-s" ".structkit-custom-structures/${{ inputs.structures_repository_path }}")
+        fi
+
+        # Add extra args
+        if [[ -n "${{ inputs.extra_args }}" ]]; then
+          ARGS+=(${{ inputs.extra_args }})
+        fi
+
+        # Add positional arguments for generate command
+        if [[ "$COMMAND" == "generate" ]]; then
+          ARGS+=("${{ inputs.struct_file }}" "${{ inputs.output_dir }}")
+        elif [[ "$COMMAND" == "validate" ]]; then
+          ARGS+=("${{ inputs.struct_file }}")
+        fi
+
+        # Run the command
+        echo "Running: structkit $COMMAND ${ARGS[@]}"
+        OUTPUT_FILE=$(mktemp)
+        DIFF_FILE=""
+
+        if [[ "${{ inputs.diff }}" == "true" ]]; then
+          DIFF_FILE="${GITHUB_WORKSPACE}/.structkit-diff.txt"
+          structkit "$COMMAND" "${ARGS[@]}" | tee "$OUTPUT_FILE" > "$DIFF_FILE"
+          EXIT_CODE=${PIPESTATUS[0]}
+        else
+          structkit "$COMMAND" "${ARGS[@]}" | tee "$OUTPUT_FILE"
+          EXIT_CODE=$?
+        fi
+
+        # Check for changes
+        HAS_CHANGES="false"
+        if grep -qE "(would be created|would be modified|would be deleted|Creating|Modifying|Deleting)" "$OUTPUT_FILE" 2>/dev/null; then
+          HAS_CHANGES="true"
+        fi
+
+        # Set outputs
+        echo "exit_code=$EXIT_CODE" >> $GITHUB_OUTPUT
+        echo "success=$([ $EXIT_CODE -eq 0 ] && echo true || echo false)" >> $GITHUB_OUTPUT
+        echo "has_changes=$HAS_CHANGES" >> $GITHUB_OUTPUT
+        echo "diff_file=${DIFF_FILE}" >> $GITHUB_OUTPUT
+
+        rm -f "$OUTPUT_FILE"
+
+        # Clean up custom structures if checked out
+        if [[ -d ".structkit-custom-structures" ]]; then
+          rm -rf .structkit-custom-structures
+        fi
+
+        # Fail if requested and changes detected
+        if [[ "${{ inputs.fail_on_diff }}" == "true" ]] && [[ "$HAS_CHANGES" == "true" ]]; then
+          echo "::error::Changes detected! Structure drift found."
+          exit 1
+        fi
+
+        exit $EXIT_CODE
