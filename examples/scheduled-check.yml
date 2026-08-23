@@ -17,7 +17,7 @@ jobs:
       - name: Check for drift
         id: drift
         continue-on-error: true
-        uses: httpdss/struct-action@v1
+        uses: httpdss/structkit-action@v1
         with:
           command: generate
           dry_run: true

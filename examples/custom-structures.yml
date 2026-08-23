@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Generate with custom structures
-        uses: httpdss/struct-action@v1
+        uses: httpdss/structkit-action@v1
         with:
           command: generate
           struct_file: .struct.yaml

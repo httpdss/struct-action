@@ -1,6 +1,6 @@
 # StructKit Action
 
-[![GitHub](https://img.shields.io/github/license/httpdss/struct-action)](LICENSE)
+[![GitHub](https://img.shields.io/github/license/httpdss/structkit-action)](LICENSE)
 
 A GitHub Action for running [StructKit](https://github.com/httpdss/structkit) commands in your CI/CD pipeline. Use this action to validate project structure definitions or generate files and folders automatically.
 
@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: httpdss/struct-action@v1
+      - uses: httpdss/structkit-action@v1
         with:
           command: validate
 ```
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: httpdss/struct-action@v1
+      - uses: httpdss/structkit-action@v1
         with:
           command: generate
           dry_run: true
@@ -67,7 +67,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: httpdss/struct-action@v1
+      - uses: httpdss/structkit-action@v1
         with:
           command: generate
           struct_file: .struct.yaml
@@ -116,7 +116,7 @@ jobs:
 ### Use Specific StructKit Version
 
 ```yaml
-- uses: httpdss/struct-action@v1
+- uses: httpdss/structkit-action@v1
   with:
     command: validate
     structkit_version: "1.2.3"
@@ -125,7 +125,7 @@ jobs:
 ### Install from Git
 
 ```yaml
-- uses: httpdss/struct-action@v1
+- uses: httpdss/structkit-action@v1
   with:
     command: generate
     structkit_version: "https://github.com/httpdss/structkit.git@main"
@@ -134,7 +134,7 @@ jobs:
 ### Use Custom Structures Repository
 
 ```yaml
-- uses: httpdss/struct-action@v1
+- uses: httpdss/structkit-action@v1
   with:
     command: generate
     structures_repository: myorg/my-structures
@@ -145,7 +145,7 @@ jobs:
 ### Generate with Extra Arguments
 
 ```yaml
-- uses: httpdss/struct-action@v1
+- uses: httpdss/structkit-action@v1
   with:
     command: generate
     extra_args: "--verbose --force"
@@ -154,7 +154,7 @@ jobs:
 ### Use Action Outputs
 
 ```yaml
-- uses: httpdss/struct-action@v1
+- uses: httpdss/structkit-action@v1
   id: structkit
   with:
     command: generate
@@ -182,7 +182,7 @@ jobs:
           - config/frontend.struct.yaml
     steps:
       - uses: actions/checkout@v4
-      - uses: httpdss/struct-action@v1
+      - uses: httpdss/structkit-action@v1
         with:
           command: validate
           struct_file: ${{ matrix.struct_file }}
@@ -233,7 +233,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: httpdss/struct-action@v1
+      - uses: httpdss/structkit-action@v1
         with:
           command: validate
 ```
@@ -251,7 +251,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: httpdss/struct-action@v1
+      - uses: httpdss/structkit-action@v1
         with:
           command: generate
           dry_run: true
@@ -273,7 +273,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: httpdss/struct-action@v1
+      - uses: httpdss/structkit-action@v1
         with:
           command: generate
 
@@ -295,7 +295,7 @@ If `structkit` command is not found, ensure Python is properly set up:
 - uses: actions/setup-python@v5
   with:
     python-version: '3.x'
-- uses: httpdss/struct-action@v1
+- uses: httpdss/structkit-action@v1
 ```
 
 ### Permission Denied
@@ -327,5 +327,5 @@ MIT License - see [LICENSE](LICENSE) file for details.
 ## Support
 
 For issues and questions:
-- [Open an issue](https://github.com/httpdss/struct-action/issues)
+- [Open an issue](https://github.com/httpdss/structkit-action/issues)
 - [StructKit Documentation](https://github.com/httpdss/structkit)
