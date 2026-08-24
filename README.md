@@ -2,7 +2,7 @@
 
 [![GitHub](https://img.shields.io/github/license/httpdss/structkit-action)](LICENSE)
 
-A GitHub Action for running [StructKit](https://github.com/httpdss/structkit) commands in your CI/CD pipeline. Use this action to validate project structure definitions or generate files and folders automatically.
+Companion to [StructKit](https://github.com/httpdss/structkit). Run `validate`, `generate`, or a dry-run drift check as a workflow step. Star the [core repo](https://github.com/httpdss/structkit).
 
 ## Features
 
